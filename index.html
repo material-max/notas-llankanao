@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Notas — Escuela Llankanao</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --verde:#1D9E75;--verde-d:#0F6E56;--verde-l:#E1F5EE;
+  --rojo:#E24B4A;--rojo-l:#FCEBEB;
+  --amarillo:#EF9F27;--amarillo-l:#FAEEDA;
+  --gris:#f5f5f3;--gris2:#e8e8e5;--gris3:#aaa;
+  --txt:#1a1a1a;--txt2:#555;
+  --r:10px;--rl:14px;--s:0 2px 8px rgba(0,0,0,.08);
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f0ed;color:var(--txt);font-size:15px;min-height:100vh}
+.app{max-width:1060px;margin:0 auto;padding:1rem}
+@media(max-width:620px){.app{padding:.5rem}}
+
+/* Header */
+.hdr{background:#fff;border-radius:var(--rl);padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:14px;box-shadow:var(--s)}
+.logo{width:50px;height:50px;border-radius:50%;background:var(--verde);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:#fff;flex-shrink:0;letter-spacing:-.5px}
+.hdr-txt h1{font-size:16px;font-weight:700;color:var(--txt)}
+.hdr-txt p{font-size:12px;color:var(--txt2);margin-top:1px}
+.cnx{margin-left:auto;font-size:12px;display:flex;align-items:center;gap:5px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gris3)}
+.dot.on{background:var(--verde)} .dot.off{background:var(--rojo)}
+
+/* Nav */
+.nav{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
+.nbtn{padding:9px 18px;border:1.5px solid var(--gris2);border-radius:var(--r);background:#fff;color:var(--txt2);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px}
+.nbtn.act{background:var(--verde);color:#fff;border-color:var(--verde)}
+.nbtn:hover:not(.act){background:var(--gris)}
+
+/* Cards */
+.card{background:#fff;border-radius:var(--rl);padding:1.25rem;margin-bottom:1rem;box-shadow:var(--s)}
+.ctit{font-size:12px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem}
+
+/* Forms */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:1rem}
+.fgrid-5{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:1rem}
+label{font-size:13px;font-weight:500;color:var(--txt2);display:block;margin-bottom:5px}
+select,input[type=text]{width:100%;padding:10px 12px;border:1.5px solid var(--gris2);border-radius:var(--r);font-size:14px;background:#fff;color:var(--txt);transition:border-color .15s;font-family:inherit}
+select:focus,input:focus{outline:none;border-color:var(--verde);box-shadow:0 0 0 3px rgba(29,158,117,.1)}
+.hint{font-size:12px;color:var(--txt2);background:var(--gris);padding:6px 10px;border-radius:6px;display:inline-block;margin-top:6px}
+
+/* Semestre tabs */
+.stabs{display:flex;gap:6px;margin-top:5px}
+.stab{padding:8px 16px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--gris2);color:var(--txt2);background:#fff;transition:all .15s}
+.stab.act{background:var(--verde);color:#fff;border-color:var(--verde)}
+
+/* Botones */
+.btn{padding:9px 20px;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;border:1.5px solid;transition:all .15s;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+.btn-p{background:var(--verde);color:#fff;border-color:var(--verde)}
+.btn-p:hover{background:var(--verde-d)}
+.btn-p:disabled{opacity:.5;cursor:not-allowed}
+.btn-s{background:#fff;color:var(--txt);border-color:var(--gris2)}
+.btn-s:hover{background:var(--gris)}
+.btn-d{background:#fff;color:var(--rojo);border-color:var(--rojo)}
+.btn-d:hover{background:var(--rojo-l)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+
+/* Tabla notas */
+.twrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--gris);font-weight:600;font-size:11px;color:var(--txt2);text-transform:uppercase;letter-spacing:.04em;padding:9px 8px;text-align:left;border-bottom:1.5px solid var(--gris2);white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid var(--gris);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--gris)}
+.ni{width:52px;padding:5px 4px;text-align:center;border:1.5px solid var(--gris2);border-radius:6px;font-size:13px;background:#fff;transition:border-color .15s;font-family:inherit}
+.ni:focus{outline:none;border-color:var(--verde);box-shadow:0 0 0 2px rgba(29,158,117,.15)}
+.ni.inv{border-color:var(--rojo);background:var(--rojo-l)}
+.ni.rep{color:var(--rojo);font-weight:600;border-color:var(--rojo)}
+.num{font-size:12px;color:var(--gris3);text-align:center}
+.pc{font-weight:600;font-size:13px;text-align:center}
+.pok{color:var(--verde)} .pme{color:var(--amarillo)} .pma{color:var(--rojo)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:1rem}
+.stat{background:var(--gris);border-radius:var(--r);padding:.75rem 1rem}
+.stat .v{font-size:22px;font-weight:700}
+.stat .l{font-size:11px;color:var(--txt2);margin-top:2px}
+
+/* Mensajes / carga */
+.msg{font-size:13px;padding:8px 14px;border-radius:var(--r);display:none;align-items:center;gap:6px}
+.msg.show{display:flex}
+.msg-ok{background:var(--verde-l);color:var(--verde-d)}
+.msg-err{background:var(--rojo-l);color:#A32D2D}
+.ld{display:none;align-items:center;gap:8px;font-size:13px;color:var(--txt2)}
+.ld.show{display:flex}
+.spin{width:16px;height:16px;border:2px solid var(--gris2);border-top-color:var(--verde);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.nodata{text-align:center;padding:2.5rem 1rem;color:var(--txt2);font-size:14px}
+.nodata .ic{font-size:36px;margin-bottom:.5rem;opacity:.4}
+
+/* Páginas */
+.page{display:none} .page.act{display:block}
+
+/* Informe */
+.inf-box{background:#fff;border:1px solid var(--gris2);border-radius:var(--rl);padding:1.5rem;position:relative;overflow:hidden}
+.inf-head{text-align:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--gris2)}
+.inf-head h2{font-size:15px;font-weight:700;margin:6px 0 4px}
+.inf-head p{font-size:12px;color:var(--txt2)}
+.inf-t{width:100%;border-collapse:collapse;font-size:12px}
+.inf-t th,.inf-t td{border:1px solid var(--gris2);padding:6px 8px}
+.inf-t th{background:var(--gris);font-weight:600}
+.inf-t .r{color:#cc0000;font-weight:700}
+.firmas{margin-top:2.5rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem;font-size:12px}
+.firma{text-align:center}
+.fln{border-top:1px solid var(--txt2);padding-top:5px;margin-top:2rem;font-weight:600}
+.fec{margin-top:1rem;text-align:right;font-size:11px;color:#555}
+.mw{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:340px;height:340px;opacity:.07;pointer-events:none;z-index:0}
+
+@media print{
+  body *{visibility:hidden}
+  .inf-box,.inf-box *{visibility:visible}
+  .inf-box{position:fixed;top:0;left:0;width:21.59cm;min-height:27.94cm;border:none;padding:1.8cm 2cm;box-shadow:none;font-size:11px;background:#fff}
+  .inf-t th,.inf-t td{padding:4px 6px;font-size:10px}
+  .no-print{display:none!important}
+}
+@page{size:letter portrait;margin:0}
+
+/* Admin */
+.btn-ed{padding:4px 10px;font-size:12px;border-radius:6px;cursor:pointer;border:1.5px solid var(--gris2);background:#fff;color:var(--txt);margin-right:4px}
+.btn-ed:hover{background:var(--gris)}
+.btn-el{padding:4px 10px;font-size:12px;border-radius:6px;cursor:pointer;border:1.5px solid var(--rojo);background:#fff;color:var(--rojo)}
+.btn-el:hover{background:var(--rojo-l)}
+.apod-sec{border-top:1px dashed var(--gris2);padding-top:12px;margin-top:4px}
+.apod-sec-tit{font-size:11px;font-weight:600;color:var(--verde-d);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="logo">EL</div>
+  <div class="hdr-txt">
+    <h1 id="tit-colegio">Escuela Llankanao M.F.M.S</h1>
+    <p>Sistema de registro de notas 2026</p>
+  </div>
+  <div class="cnx">
+    <span class="dot" id="dot"></span>
+    <span id="cnx-txt">Conectando...</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav no-print">
+  <button class="nbtn act" onclick="irA('notas',this)"><span>✏️</span> Ingresar notas</button>
+  <button class="nbtn"     onclick="irA('consulta',this)"><span>🔍</span> Consultar</button>
+  <button class="nbtn"     onclick="irA('informes',this)"><span>📄</span> Informes</button>
+  <button class="nbtn"     onclick="irA('admin',this)"><span>⚙️</span> Administración</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PÁGINA 1: INGRESO DE NOTAS
+═══════════════════════════════════════════════════ -->
+<div id="page-notas" class="page act">
+  <div class="card">
+    <div class="ctit">Selección de curso y asignatura</div>
+    <div class="fgrid">
+      <div>
+        <label>Curso</label>
+        <select id="sel-curso" onchange="onCursoChange()">
+          <option value="">— Seleccione —</option>
+          <option>1° Básico</option><option>2° Básico</option><option>3° Básico</option>
+          <option>4° Básico</option><option>5° Básico</option><option>6° Básico</option>
+          <option>7° Básico</option><option>8° Básico</option>
+        </select>
+      </div>
+      <div>
+        <label>Asignatura</label>
+        <select id="sel-asig" onchange="onAsigChange()">
+          <option value="">— Seleccione —</option>
+          <option>Lenguaje y Comunicación</option>
+          <option>Matemática</option>
+          <option>Historia, Geografía y Ciencias Sociales</option>
+          <option>Ciencias Naturales</option>
+          <option>Idioma Extranjero: Inglés</option>
+          <option>Tecnología</option>
+          <option>Artes Visuales</option>
+          <option>Educación Física y Salud</option>
+          <option>Música</option>
+          <option>Religión</option>
+        </select>
+      </div>
+      <div>
+        <label>Semestre</label>
+        <div class="stabs">
+          <button class="stab act" id="s1b" onclick="setSem(1)">1° Semestre</button>
+          <button class="stab"     id="s2b" onclick="setSem(2)">2° Semestre</button>
+        </div>
+      </div>
+    </div>
+    <span class="hint">Sin punto: <strong>45</strong>=4.5 · <strong>63</strong>=6.3 · <strong>70</strong>=7.0</span>
+  </div>
+
+  <div id="notas-panel" style="display:none">
+    <div class="card">
+      <div class="stats" id="stats-row"></div>
+      <div class="acts">
+        <button class="btn btn-p" id="btn-guardar" onclick="guardarNotas()" disabled>💾 Guardar notas</button>
+        <button class="btn btn-s" onclick="limpiarNotas()">Limpiar</button>
+        <div class="ld" id="ld-notas"><div class="spin"></div> Guardando...</div>
+        <div class="msg msg-ok" id="msg-ok">✓ Notas guardadas</div>
+        <div class="msg msg-err" id="msg-err">✗ Error al guardar</div>
+      </div>
+      <div class="twrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:36px">N°</th><th>Alumno</th>
+              <th>N1</th><th>N2</th><th>N3</th><th>N4</th>
+              <th>N5</th><th>N6</th><th>N7</th><th>N8</th>
+              <th>Promedio</th>
+            </tr>
+          </thead>
+          <tbody id="notas-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div id="notas-ph"><div class="nodata"><div class="ic">✏️</div>Seleccione curso y asignatura para comenzar</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PÁGINA 2: CONSULTA
+═══════════════════════════════════════════════════ -->
+<div id="page-consulta" class="page">
+  <div class="card">
+    <div class="ctit">Consulta de notas por alumno</div>
+    <div class="fgrid">
+      <div>
+        <label>Curso</label>
+        <select id="con-curso" onchange="onConCursoChange()">
+          <option value="">— Seleccione —</option>
+          <option>1° Básico</option><option>2° Básico</option><option>3° Básico</option>
+          <option>4° Básico</option><option>5° Básico</option><option>6° Básico</option>
+          <option>7° Básico</option><option>8° Básico</option>
+        </select>
+      </div>
+      <div>
+        <label>Alumno</label>
+        <select id="con-alumno"><option value="">— Seleccione —</option></select>
+      </div>
+      <div>
+        <label>Semestre</label>
+        <div class="stabs">
+          <button class="stab act" id="cs1b" onclick="setConSem(1)">1° Sem.</button>
+          <button class="stab"     id="cs2b" onclick="setConSem(2)">2° Sem.</button>
+          <button class="stab"     id="cs3b" onclick="setConSem('anual')">Anual</button>
+        </div>
+      </div>
+    </div>
+    <div class="acts">
+      <button class="btn btn-p" onclick="consultarNotas()">🔍 Consultar</button>
+      <div class="ld" id="ld-con"><div class="spin"></div> Cargando...</div>
+    </div>
+  </div>
+  <div id="con-result">
+    <div class="nodata"><div class="ic">🔍</div>Seleccione opciones y presione Consultar</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PÁGINA 3: INFORMES
+═══════════════════════════════════════════════════ -->
+<div id="page-informes" class="page">
+  <div class="card">
+    <div class="ctit">Generar informe</div>
+    <div class="fgrid">
+      <div>
+        <label>Tipo de informe</label>
+        <select id="inf-tipo" onchange="onInfTipoChange()">
+          <option value="">— Seleccione —</option>
+          <option value="sem-alumno">Semestral — Alumno individual</option>
+          <option value="sem-curso">Semestral — Curso completo</option>
+          <option value="fin-alumno">Final anual — Alumno individual</option>
+          <option value="fin-curso">Final anual — Curso completo</option>
+        </select>
+      </div>
+      <div>
+        <label>Semestre</label>
+        <div class="stabs" id="inf-sem-wrap">
+          <button class="stab act" id="is1b" onclick="setInfSem(1)">1° Sem.</button>
+          <button class="stab"     id="is2b" onclick="setInfSem(2)">2° Sem.</button>
+        </div>
+      </div>
+      <div>
+        <label>Curso</label>
+        <select id="inf-curso" onchange="onInfCursoChange()">
+          <option value="">— Seleccione —</option>
+          <option>1° Básico</option><option>2° Básico</option><option>3° Básico</option>
+          <option>4° Básico</option><option>5° Básico</option><option>6° Básico</option>
+          <option>7° Básico</option><option>8° Básico</option>
+        </select>
+      </div>
+      <div id="inf-al-wrap">
+        <label>Alumno</label>
+        <select id="inf-alumno"><option value="">— Seleccione —</option></select>
+      </div>
+    </div>
+    <div class="acts">
+      <button class="btn btn-p" onclick="generarInforme()">👁 Ver informe</button>
+      <button class="btn btn-s" onclick="window.print()">🖨 Imprimir / PDF</button>
+      <div class="ld" id="ld-inf"><div class="spin"></div> Generando...</div>
+    </div>
+  </div>
+  <div id="inf-result">
+    <div class="nodata"><div class="ic">📄</div>Seleccione las opciones y presione "Ver informe"</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PÁGINA 4: ADMINISTRACIÓN
+═══════════════════════════════════════════════════ -->
+<div id="page-admin" class="page">
+
+  <div class="card">
+    <div class="ctit">Gestión de alumnos</div>
+    <div class="fgrid">
+      <div>
+        <label>Curso</label>
+        <select id="adm-curso" onchange="onAdmCursoChange()">
+          <option value="">— Seleccione —</option>
+          <option>1° Básico</option><option>2° Básico</option><option>3° Básico</option>
+          <option>4° Básico</option><option>5° Básico</option><option>6° Básico</option>
+          <option>7° Básico</option><option>8° Básico</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario agregar -->
+  <div class="card" id="adm-form" style="display:none">
+    <div class="ctit">Agregar alumno nuevo</div>
+    <div class="fgrid-5">
+      <div style="grid-column:span 2">
+        <label>Nombre completo del alumno (mayúsculas)</label>
+        <input type="text" id="n-nombre" placeholder="APELLIDO1 APELLIDO2 NOMBRE1 NOMBRE2" style="text-transform:uppercase">
+      </div>
+      <div>
+        <label>RUT del alumno</label>
+        <input type="text" id="n-rut" placeholder="12345678-9">
+      </div>
+      <div>
+        <label>N° de lista</label>
+        <input type="text" id="n-num" placeholder="Automático">
+      </div>
+    </div>
+    <div class="apod-sec">
+      <div class="apod-sec-tit">Datos del apoderado (para Portal)</div>
+      <div class="fgrid-5">
+        <div>
+          <label>RUT del apoderado</label>
+          <input type="text" id="n-rut-apod" placeholder="12345678-9">
+        </div>
+        <div style="grid-column:span 2">
+          <label>Nombre y apellidos del apoderado</label>
+          <input type="text" id="n-nom-apod" placeholder="NOMBRE Y APELLIDOS" style="text-transform:uppercase">
+        </div>
+      </div>
+    </div>
+    <div class="acts" style="margin-top:1rem">
+      <button class="btn btn-p" onclick="agregarAlumno()">➕ Agregar alumno</button>
+      <div class="ld" id="ld-add"><div class="spin"></div> Guardando...</div>
+      <div class="msg msg-ok"  id="msg-add-ok">✓ Alumno agregado</div>
+      <div class="msg msg-err" id="msg-add-err">✗ Error al guardar</div>
+    </div>
+  </div>
+
+  <!-- Lista del curso -->
+  <div id="adm-lista" style="display:none">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+        <span class="ctit" style="margin-bottom:0">Lista del curso</span>
+        <span id="adm-total" style="font-size:13px;color:var(--txt2)"></span>
+      </div>
+      <div class="ld" id="ld-adm"><div class="spin"></div> Cargando...</div>
+      <div class="twrap">
+        <table id="adm-tabla" style="display:none">
+          <thead>
+            <tr>
+              <th style="width:44px">N°</th>
+              <th>Nombre del alumno</th>
+              <th style="width:120px">RUT Alumno</th>
+              <th style="width:140px">RUT Apoderado</th>
+              <th style="width:96px">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="adm-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="adm-ph"><div class="nodata"><div class="ic">⚙️</div>Seleccione un curso para gestionar sus alumnos</div></div>
+</div>
+
+</div><!-- /app -->
+
+<!-- MODAL EDITAR -->
+<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:var(--rl);padding:1.5rem;width:92%;max-width:540px;box-shadow:0 8px 32px rgba(0,0,0,.18);max-height:92vh;overflow-y:auto">
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:1.25rem">Editar alumno</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:1.25rem">
+      <div>
+        <label>Nombre completo</label>
+        <input type="text" id="e-nombre" style="text-transform:uppercase">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label>RUT del alumno</label><input type="text" id="e-rut"></div>
+        <div><label>N° de lista</label><input type="text" id="e-num"></div>
+      </div>
+      <div class="apod-sec">
+        <div class="apod-sec-tit">Datos del apoderado</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div><label>RUT apoderado</label><input type="text" id="e-rut-apod" placeholder="12345678-9"></div>
+          <div><label>Nombre apoderado</label><input type="text" id="e-nom-apod" style="text-transform:uppercase"></div>
+        </div>
+      </div>
+      <input type="hidden" id="e-orig">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-s" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-p" onclick="guardarEdicion()">Guardar cambios</button>
+    </div>
+    <div class="ld" id="ld-edit" style="margin-top:10px"><div class="spin"></div> Guardando...</div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  CONFIGURACIÓN
+// ============================================================
+const API_URL = "https://script.google.com/macros/s/AKfycbxEd-cgxWW9onn29Wt8HPoKqa74ExYF8NSn2N0US9Bm_Ozo5LLDwAwNItcSFZ2uoPYC/exec";
+
+// ============================================================
+//  CONSTANTES
+// ============================================================
+const CURSOS = ['1° Básico','2° Básico','3° Básico','4° Básico',
+                '5° Básico','6° Básico','7° Básico','8° Básico'];
+
+const ASIGS = [
+  'Lenguaje y Comunicación',
+  'Matemática',
+  'Historia, Geografía y Ciencias Sociales',
+  'Ciencias Naturales',
+  'Idioma Extranjero: Inglés',
+  'Tecnología',
+  'Artes Visuales',
+  'Educación Física y Salud',
+  'Música',
+  'Religión'
+];
+
+const ASIGS_ABREV = ['Leng.','Mat.','Hist.','Cien.','Ingl.','Tec.','Artes','Ed.Fís.','Mús.','Relig.'];
+
+// ============================================================
+//  ESTADO
+// ============================================================
+let CACHE_ALUMNOS = {};
+let CACHE_NOTAS   = {};
+let CONFIG        = {};
+let curSem  = 1;
+let conSem  = 1;
+let infSem  = 1;
+let notasMod = false;
+
+// ============================================================
+//  INICIO
+// ============================================================
+window.addEventListener('load', async () => {
+  try {
+    const r = await api({ accion:'getConfig' });
+    if (r.ok) {
+      CONFIG = r.config;
+      document.getElementById('tit-colegio').textContent = CONFIG.nombreColegio || 'Escuela Llankanao';
+      setCnx(true);
+    }
+  } catch(e) { setCnx(false); }
+});
+
+function setCnx(ok) {
+  document.getElementById('dot').className = 'dot ' + (ok ? 'on' : 'off');
+  document.getElementById('cnx-txt').textContent = ok ? 'Conectado' : 'Sin conexión';
+}
+
+// ============================================================
+//  API
+// ============================================================
+async function api(data) {
+  const payload = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  const r = await fetch(API_URL + '?payload=' + encodeURIComponent(payload), { redirect:'follow' });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+// ============================================================
+//  NAVEGACIÓN
+// ============================================================
+function irA(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('act'));
+  document.querySelectorAll('.nbtn').forEach(b => b.classList.remove('act'));
+  document.getElementById('page-' + id).classList.add('act');
+  btn.classList.add('act');
+}
+
+// ============================================================
+//  HELPERS DE NOTAS
+// ============================================================
+function parseNota(raw) {
+  const s = String(raw).trim().replace(',','.');
+  if (!s) return null;
+  let n;
+  if (s.includes('.'))    { n = parseFloat(s); }
+  else if (s.length === 1){ n = parseFloat(s); }
+  else if (s.length === 2){ n = parseFloat(s[0] + '.' + s[1]); }
+  else                    { n = parseFloat(s); }
+  if (isNaN(n)) return null;
+  return Math.min(7, Math.max(1, n));
+}
+const showN = n => n !== null ? n.toFixed(1) : '';
+
+function calcProm(ns) {
+  const v = ns.filter(n => n !== null);
+  return v.length ? v.reduce((a,b)=>a+b,0)/v.length : null;
+}
+function promFinal(p) {
+  if (p === null) return null;
+  const d = Math.round(p * 10) / 10;
+  const f = Math.floor(d * 10) / 10;
+  return (d - f) >= 0.05 ? Math.ceil(d * 10)/10 : f;
+}
+function concepto(p) {
+  if (p >= 6.5) return 'MB';
+  if (p >= 5.5) return 'B';
+  if (p >= 4.0) return 'S';
+  return 'I';
+}
+function pcls(p) {
+  if (p === null) return 'pc';
+  if (p >= 5.0) return 'pc pok';
+  if (p >= 4.0) return 'pc pme';
+  return 'pc pma';
+}
+
+// ============================================================
+//  INGRESO DE NOTAS
+// ============================================================
+async function onCursoChange() {
+  const curso = document.getElementById('sel-curso').value;
+  if (!curso) { document.getElementById('notas-panel').style.display='none'; document.getElementById('notas-ph').style.display='block'; return; }
+  if (!CACHE_ALUMNOS[curso]) {
+    try { const r = await api({accion:'getAlumnos',curso}); if(r.ok) CACHE_ALUMNOS[curso]=r.alumnos; } catch(e){}
+  }
+  onAsigChange();
+}
+
+async function onAsigChange() {
+  const curso = document.getElementById('sel-curso').value;
+  const asig  = document.getElementById('sel-asig').value;
+  if (!curso || !asig) { document.getElementById('notas-panel').style.display='none'; document.getElementById('notas-ph').style.display='block'; return; }
+  await cargarTablaNotas(curso, asig, curSem);
+}
+
+function setSem(s) {
+  curSem = s;
+  document.getElementById('s1b').classList.toggle('act', s===1);
+  document.getElementById('s2b').classList.toggle('act', s===2);
+  onAsigChange();
+}
+
+async function cargarTablaNotas(curso, asig, sem) {
+  document.getElementById('notas-ph').style.display='none';
+  document.getElementById('notas-panel').style.display='block';
+  const key = `${curso}||${asig}||${sem}`;
+  let notasGuard = {};
+  if (!CACHE_NOTAS[key]) {
+    try {
+      const r = await api({accion:'getNotas', curso, asignatura:asig, semestre:sem});
+      if (r.ok) { CACHE_NOTAS[key] = r.notas; notasGuard = r.notas; }
+    } catch(e) { setCnx(false); }
+  } else { notasGuard = CACHE_NOTAS[key]; }
+
+  const alumnos = CACHE_ALUMNOS[curso] || [];
+  let tbody = '';
+  alumnos.forEach(al => {
+    const ns = notasGuard[al.nombre] || Array(8).fill(null);
+    let celdas = '';
+    ns.forEach((n, i) => {
+      celdas += `<td><input class="ni" id="ni_${al.nombre.replace(/[^a-zA-Z0-9]/g,'_')}_${i}"
+        value="${showN(n)}" onchange="onNotaChange()" oninput="validarInput(this)"></td>`;
+    });
+    const p = calcProm(ns);
+    tbody += `<tr>
+      <td class="num">${al.numero}</td>
+      <td>${al.nombre}</td>
+      ${celdas}
+      <td class="${pcls(p)}">${p!==null?p.toFixed(1):'—'}</td>
+    </tr>`;
+  });
+  document.getElementById('notas-tbody').innerHTML = tbody;
+  actualizarStats(curso, asig, sem);
+  document.getElementById('btn-guardar').disabled = false;
+  notasMod = false;
+}
+
+function validarInput(inp) {
+  const n = parseNota(inp.value);
+  inp.classList.toggle('inv', inp.value !== '' && n === null);
+  inp.classList.toggle('rep', n !== null && n < 4);
+  recalcProm(inp);
+}
+
+function recalcProm(inp) {
+  const tr = inp.closest('tr');
+  const inputs = tr.querySelectorAll('.ni');
+  const ns = Array.from(inputs).map(i => parseNota(i.value));
+  const p = calcProm(ns);
+  const pc = tr.querySelector('.pc');
+  if (pc) { pc.className = pcls(p); pc.textContent = p!==null?p.toFixed(1):'—'; }
+}
+
+function onNotaChange() { notasMod = true; }
+
+function limpiarNotas() {
+  document.querySelectorAll('.ni').forEach(i => { i.value=''; i.className='ni'; });
+  document.querySelectorAll('.pc').forEach(c => { c.className='pc'; c.textContent='—'; });
+}
+
+async function guardarNotas() {
+  const curso = document.getElementById('sel-curso').value;
+  const asig  = document.getElementById('sel-asig').value;
+  if (!curso || !asig) return;
+
+  const alumnos = CACHE_ALUMNOS[curso] || [];
+  const notas = {};
+  alumnos.forEach(al => {
+    const key = al.nombre.replace(/[^a-zA-Z0-9]/g,'_');
+    const ns = [];
+    for (let i=0; i<8; i++) {
+      const inp = document.getElementById(`ni_${key}_${i}`);
+      ns.push(inp ? parseNota(inp.value) : null);
+    }
+    notas[al.nombre] = ns.map(n => n !== null ? n : '');
+  });
+
+  document.getElementById('ld-notas').classList.add('show');
+  document.getElementById('btn-guardar').disabled = true;
+  try {
+    const r = await api({accion:'guardarNotas', curso, asignatura:asig, semestre:curSem, notas});
+    document.getElementById('ld-notas').classList.remove('show');
+    if (r.ok) {
+      const key = `${curso}||${asig}||${curSem}`;
+      delete CACHE_NOTAS[key];
+      delete CACHE_NOTAS[`${curso}||ALL`];
+      show('msg-ok'); setTimeout(()=>hide('msg-ok'),3000);
+      notasMod = false;
+    } else { show('msg-err'); setTimeout(()=>hide('msg-err'),3000); }
+  } catch(e) {
+    document.getElementById('ld-notas').classList.remove('show');
+    show('msg-err'); setTimeout(()=>hide('msg-err'),3000); setCnx(false);
+  }
+  document.getElementById('btn-guardar').disabled = false;
+}
+
+function actualizarStats(curso, asig, sem) {
+  const alumnos = CACHE_ALUMNOS[curso] || [];
+  const key = `${curso}||${asig}||${sem}`;
+  const ng = CACHE_NOTAS[key] || {};
+  let sum=0, cnt=0, bajo4=0, sob6=0;
+  alumnos.forEach(al => {
+    const p = calcProm(ng[al.nombre] || Array(8).fill(null));
+    if (p!==null) { sum+=p; cnt++; if(p<4) bajo4++; if(p>=6) sob6++; }
+  });
+  const promG = cnt ? sum/cnt : null;
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat"><div class="v">${alumnos.length}</div><div class="l">Alumnos</div></div>
+    <div class="stat"><div class="v" style="color:var(--verde)">${promG!==null?promG.toFixed(1):'—'}</div><div class="l">Promedio curso</div></div>
+    <div class="stat"><div class="v" style="color:var(--rojo)">${bajo4}</div><div class="l">Bajo 4.0</div></div>
+    <div class="stat"><div class="v" style="color:var(--verde)">${sob6}</div><div class="l">Sobre 6.0</div></div>`;
+}
+
+// ============================================================
+//  CONSULTA
+// ============================================================
+async function onConCursoChange() {
+  const curso = document.getElementById('con-curso').value;
+  const sel = document.getElementById('con-alumno');
+  sel.innerHTML = '<option value="">— Seleccione —</option>';
+  if (!curso) return;
+  if (!CACHE_ALUMNOS[curso]) {
+    try { const r = await api({accion:'getAlumnos',curso}); if(r.ok) CACHE_ALUMNOS[curso]=r.alumnos; } catch(e){}
+  }
+  (CACHE_ALUMNOS[curso]||[]).forEach(al => {
+    const o = document.createElement('option'); o.value=al.nombre; o.textContent=al.nombre; sel.appendChild(o);
+  });
+}
+
+function setConSem(s) {
+  conSem = s;
+  document.getElementById('cs1b').classList.toggle('act', s===1);
+  document.getElementById('cs2b').classList.toggle('act', s===2);
+  document.getElementById('cs3b').classList.toggle('act', s==='anual');
+}
+
+async function consultarNotas() {
+  const curso  = document.getElementById('con-curso').value;
+  const alumno = document.getElementById('con-alumno').value;
+  if (!curso || !alumno) { alert('Selecciona curso y alumno'); return; }
+  show('ld-con');
+  await precargarCurso(curso);
+  hide('ld-con');
+  if (conSem === 'anual') renderConAnual(curso, alumno);
+  else renderConSemestre(curso, alumno, conSem);
+}
+
+function renderConSemestre(curso, alumno, sem) {
+  let rows='', proms=[];
+  ASIGS.forEach(asig => {
+    const ns = getNA(curso, asig, sem, alumno);
+    const p = calcProm(ns);
+    if (p!==null) proms.push(p);
+    rows += `<tr>
+      <td>${asig}</td>
+      ${ns.map(n=>`<td style="text-align:center${n!==null&&n<4?';color:var(--rojo);font-weight:700':''}">${n!==null?n.toFixed(1):'—'}</td>`).join('')}
+      <td style="text-align:center;font-weight:700${p!==null&&p<4?';color:var(--rojo)':''}">${p!==null?p.toFixed(1):'—'}</td>
+    </tr>`;
+  });
+  const pg = proms.length ? proms.reduce((a,b)=>a+b,0)/proms.length : null;
+  document.getElementById('con-result').innerHTML = `
+    <div class="card">
+      <div class="ctit">${alumno} — ${sem}° Semestre</div>
+      <div class="twrap"><table>
+        <thead><tr><th>Asignatura</th>${Array.from({length:8},(_,i)=>`<th style="text-align:center">N${i+1}</th>`).join('')}<th style="text-align:center">Prom.</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr><td colspan="9" style="text-align:right;font-weight:600;padding-top:8px">Promedio general:</td>
+        <td style="text-align:center;font-weight:700;font-size:15px;color:${pg!==null&&pg<4?'var(--rojo)':'var(--verde)'}">${pg!==null?pg.toFixed(1):'—'}</td></tr></tfoot>
+      </table></div>
+    </div>`;
+}
+
+function renderConAnual(curso, alumno) {
+  let rows=[], proms=[];
+  ASIGS.forEach(asig => {
+    const p1 = calcProm(getNA(curso,asig,1,alumno));
+    const p2 = calcProm(getNA(curso,asig,2,alumno));
+    let pf = p1!==null&&p2!==null ? (p1+p2)/2 : p1!==null?p1:p2;
+    if (pf!==null) proms.push(promFinal(pf));
+    rows.push(`<tr>
+      <td>${asig}</td>
+      <td style="text-align:center${p1!==null&&p1<4?';color:var(--rojo);font-weight:700':''}">${p1!==null?p1.toFixed(1):'—'}</td>
+      <td style="text-align:center${p2!==null&&p2<4?';color:var(--rojo);font-weight:700':''}">${p2!==null?p2.toFixed(1):'—'}</td>
+      <td style="text-align:center;font-weight:700${pf!==null&&promFinal(pf)<4?';color:var(--rojo)':''}">${pf!==null?promFinal(pf).toFixed(1):'—'}</td>
+    </tr>`);
+  });
+  const pg = proms.length ? promFinal(proms.reduce((a,b)=>a+b,0)/proms.length) : null;
+  document.getElementById('con-result').innerHTML = `
+    <div class="card">
+      <div class="ctit">${alumno} — Resumen Anual</div>
+      <div class="twrap"><table>
+        <thead><tr><th>Asignatura</th><th style="text-align:center">Prom. 1°S</th><th style="text-align:center">Prom. 2°S</th><th style="text-align:center">Prom. Final</th></tr></thead>
+        <tbody>${rows.join('')}</tbody>
+        <tfoot><tr><td colspan="3" style="text-align:right;font-weight:600">Promedio general final:</td>
+        <td style="text-align:center;font-weight:700;font-size:15px;color:${pg!==null&&pg<4?'var(--rojo)':'var(--verde)'}">${pg!==null?pg.toFixed(1):'—'}</td></tr></tfoot>
+      </table></div>
+    </div>`;
+}
+
+// ============================================================
+//  INFORMES
+// ============================================================
+let infTipo = '';
+function onInfTipoChange() {
+  infTipo = document.getElementById('inf-tipo').value;
+  const needSem   = infTipo.startsWith('sem');
+  const needAlumno= infTipo.endsWith('alumno');
+  document.getElementById('inf-sem-wrap').style.display = needSem ? 'flex' : 'none';
+  document.getElementById('inf-al-wrap').style.display  = needAlumno ? 'block' : 'none';
+}
+
+function setInfSem(s) {
+  infSem = s;
+  document.getElementById('is1b').classList.toggle('act', s===1);
+  document.getElementById('is2b').classList.toggle('act', s===2);
+}
+
+async function onInfCursoChange() {
+  const curso = document.getElementById('inf-curso').value;
+  const sel = document.getElementById('inf-alumno');
+  sel.innerHTML = '<option value="">— Seleccione —</option>';
+  if (!curso) return;
+  if (!CACHE_ALUMNOS[curso]) {
+    try { const r = await api({accion:'getAlumnos',curso}); if(r.ok) CACHE_ALUMNOS[curso]=r.alumnos; } catch(e){}
+  }
+  (CACHE_ALUMNOS[curso]||[]).forEach(al => {
+    const o = document.createElement('option'); o.value=al.nombre; o.textContent=al.nombre; sel.appendChild(o);
+  });
+}
+
+async function generarInforme() {
+  const tipo   = document.getElementById('inf-tipo').value;
+  const curso  = document.getElementById('inf-curso').value;
+  const alumno = document.getElementById('inf-alumno').value;
+  if (!tipo||!curso) { alert('Selecciona tipo e informe y curso'); return; }
+  if ((tipo.endsWith('alumno'))&&!alumno) { alert('Selecciona un alumno'); return; }
+  show('ld-inf');
+  await precargarCurso(curso);
+  hide('ld-inf');
+  if (tipo==='sem-alumno')  genInfSemAlumno(curso, alumno, infSem);
+  else if (tipo==='sem-curso')   genInfSemCurso(curso, infSem);
+  else if (tipo==='fin-alumno')  genInfFinAlumno(curso, alumno);
+  else if (tipo==='fin-curso')   genInfFinCurso(curso);
+}
+
+function marcaAgua() {
+  return `<svg class="mw" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="100" cy="100" r="90" fill="none" stroke="#1D9E75" stroke-width="4"/>
+    <text x="100" y="115" text-anchor="middle" font-size="80" font-weight="bold" fill="#1D9E75">L</text>
+  </svg>`;
+}
+
+function encInforme(curso, titulo) {
+  const cfg = CONFIG;
+  const hoy = new Date().toLocaleDateString('es-CL',{day:'2-digit',month:'long',year:'numeric'});
+  return `
+    <div class="inf-head">
+      <p style="font-size:11px">${cfg.tipoEnsenanza||'General Básica'} · RBD ${cfg.rolBaseDatos||'3285-9'} · ${cfg.region||''}</p>
+      <h2>${cfg.nombreColegio||'Escuela Llankanao M.F.M.S'}</h2>
+      <p>${titulo} · Curso: ${curso} · Año ${cfg.anioEscolar||'2026'}</p>
+    </div>
+    <div class="fec">Emitido el ${hoy}</div>`;
+}
+
+function firmasInforme(curso) {
+  const alumnos = CACHE_ALUMNOS[curso] || [];
+  // Intentar obtener nombre del profesor jefe si está en CONFIG
+  const pj = CONFIG.profesorJefe || '________________________________';
+  return `
+    <div class="firmas">
+      <div class="firma"><div class="fln">${pj}</div><div>Profesor(a) Jefe ${curso}</div></div>
+      <div class="firma"><div class="fln">${CONFIG.jefUTP||'Sra. Gloria Barrera V.'}</div><div>Jefa UTP</div></div>
+      <div class="firma"><div class="fln">${CONFIG.director||'Sr. Paulo Quezada V.'}</div><div>Director(a)</div></div>
+    </div>`;
+}
+
+function genInfSemAlumno(curso, alumno, sem) {
+  let rows='', proms=[];
+  ASIGS.forEach(asig => {
+    const ns = getNA(curso,asig,sem,alumno);
+    const p  = calcProm(ns);
+    if(p!==null) proms.push(p);
+    const notasCeldas = ns.map(n => `<td class="${n!==null&&n<4?'r':''}" style="text-align:center">${n!==null?n.toFixed(1):'—'}</td>`).join('');
+    rows += `<tr><td>${asig}</td>${notasCeldas}<td class="${p!==null&&p<4?'r':''}" style="text-align:center;font-weight:700">${p!==null?p.toFixed(1):'—'}</td></tr>`;
+  });
+  const pg = proms.length ? proms.reduce((a,b)=>a+b,0)/proms.length : null;
+  document.getElementById('inf-result').innerHTML = `<div class="inf-box">${marcaAgua()}${encInforme(curso,`${sem}° Semestre — Informe de Notas`)}
+    <p style="font-size:12px;margin:8px 0 12px"><strong>Alumno:</strong> ${alumno}</p>
+    <div class="twrap"><table class="inf-t">
+      <thead><tr><th>Asignatura</th>${Array.from({length:8},(_,i)=>`<th style="text-align:center">N${i+1}</th>`).join('')}<th style="text-align:center">Prom.</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="9" style="text-align:right;font-weight:600">Promedio general:</td>
+      <td style="text-align:center;font-weight:700">${pg!==null?pg.toFixed(1):'—'}</td></tr></tfoot>
+    </table></div>${firmasInforme(curso)}</div>`;
+}
+
+function genInfSemCurso(curso, sem) {
+  const alumnos = CACHE_ALUMNOS[curso] || [];
+  const th = ASIGS_ABREV.map(a=>`<th style="text-align:center;font-size:10px">${a}</th>`).join('');
+  let rows='';
+  alumnos.forEach(al => {
+    let pList=[], celdas='';
+    ASIGS.forEach(asig => {
+      const p = calcProm(getNA(curso,asig,sem,al.nombre));
+      if(p!==null) pList.push(p);
+      celdas += `<td class="${p!==null&&p<4?'r':''}" style="text-align:center">${p!==null?p.toFixed(1):'—'}</td>`;
+    });
+    const pg = pList.length ? pList.reduce((a,b)=>a+b,0)/pList.length : null;
+    rows += `<tr><td style="text-align:center">${al.numero}</td><td style="font-size:11px">${al.nombre}</td>${celdas}<td style="text-align:center;font-weight:700">${pg!==null?pg.toFixed(1):'—'}</td></tr>`;
+  });
+  document.getElementById('inf-result').innerHTML = `<div class="inf-box">${marcaAgua()}${encInforme(curso,`${sem}° Semestre — Informe de Notas`)}
+    <div class="twrap"><table class="inf-t">
+      <thead><tr><th style="text-align:center">N°</th><th>Alumno</th>${th}<th style="text-align:center">Prom.</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>${firmasInforme(curso)}</div>`;
+}
+
+function genInfFinAlumno(curso, alumno) {
+  let rows='', promsFin=[];
+  ASIGS.forEach(asig => {
+    const p1 = calcProm(getNA(curso,asig,1,alumno));
+    const p2 = calcProm(getNA(curso,asig,2,alumno));
+    let pf = p1!==null&&p2!==null?(p1+p2)/2:p1!==null?p1:p2;
+    if(pf!==null) promsFin.push(promFinal(pf));
+    const esRel = asig==='Religión';
+    rows += `<tr>
+      <td>${asig}</td>
+      <td style="text-align:center">${p1!==null?p1.toFixed(1):'—'}</td>
+      <td style="text-align:center">${p2!==null?p2.toFixed(1):'—'}</td>
+      <td style="text-align:center;font-weight:700${pf!==null&&promFinal(pf)<4?';color:var(--rojo)':''}">${pf!==null?promFinal(pf).toFixed(1):'—'}</td>
+      ${esRel?`<td style="text-align:center">${pf!==null?concepto(promFinal(pf)):'—'}</td>`:''}
+    </tr>`;
+  });
+  const pgf = promsFin.length ? promFinal(promsFin.reduce((a,b)=>a+b,0)/promsFin.length) : null;
+  const hasRel = ASIGS.includes('Religión');
+  document.getElementById('inf-result').innerHTML = `<div class="inf-box">${marcaAgua()}${encInforme(curso,'Informe Final Anual')}
+    <table class="inf-t" style="margin-bottom:1rem"><tr>
+      <td style="width:50%"><strong>Alumno:</strong> ${alumno}</td>
+      <td><strong>Curso:</strong> ${curso}</td>
+    </tr></table>
+    <table class="inf-t"><thead><tr>
+      <th>Asignatura</th>
+      <th style="text-align:center;width:90px">Prom. 1°S</th>
+      <th style="text-align:center;width:90px">Prom. 2°S</th>
+      <th style="text-align:center;width:100px">Prom. Final</th>
+      ${hasRel?'<th style="text-align:center">Concepto</th>':''}
+    </tr></thead><tbody>${rows}</tbody>
+    <tfoot><tr>
+      <td colspan="3" style="text-align:right;font-weight:600">Promedio General Final:</td>
+      <td style="text-align:center;font-weight:700;font-size:13px">${pgf!==null?pgf.toFixed(1):'—'}</td>
+      ${hasRel?'<td></td>':''}
+    </tr></tfoot></table>${firmasInforme(curso)}</div>`;
+}
+
+function genInfFinCurso(curso) {
+  const alumnos = CACHE_ALUMNOS[curso]||[];
+  const th = ASIGS_ABREV.map(a=>`<th style="text-align:center;font-size:10px">${a}</th>`).join('');
+  let rows='';
+  alumnos.forEach(al => {
+    let pfList=[], celdas='';
+    ASIGS.forEach(asig => {
+      const p1=calcProm(getNA(curso,asig,1,al.nombre));
+      const p2=calcProm(getNA(curso,asig,2,al.nombre));
+      let pf=p1!==null&&p2!==null?(p1+p2)/2:p1!==null?p1:p2;
+      if(pf!==null) pfList.push(promFinal(pf));
+      celdas+=`<td class="${pf!==null&&promFinal(pf)<4?'r':''}" style="text-align:center">${pf!==null?promFinal(pf).toFixed(1):'—'}</td>`;
+    });
+    const pg=pfList.length?promFinal(pfList.reduce((a,b)=>a+b,0)/pfList.length):null;
+    rows+=`<tr><td style="text-align:center">${al.numero}</td><td style="font-size:11px">${al.nombre}</td>${celdas}<td style="text-align:center;font-weight:700">${pg!==null?pg.toFixed(1):'—'}</td></tr>`;
+  });
+  document.getElementById('inf-result').innerHTML=`<div class="inf-box">${marcaAgua()}${encInforme(curso,'Informe Final Anual')}
+    <div class="twrap"><table class="inf-t">
+      <thead><tr><th style="text-align:center">N°</th><th>Alumno</th>${th}<th style="text-align:center">Prom. Final</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>${firmasInforme(curso)}</div>`;
+}
+
+// ============================================================
+//  HELPER: precargar todas las notas de un curso
+// ============================================================
+async function precargarCurso(curso) {
+  if (!CACHE_ALUMNOS[curso]) {
+    try { const r=await api({accion:'getAlumnos',curso}); if(r.ok) CACHE_ALUMNOS[curso]=r.alumnos; } catch(e){}
+  }
+  if (!CACHE_NOTAS[`${curso}||ALL`]) {
+    try {
+      const r = await api({accion:'getNotasCurso',curso});
+      if (r.ok) {
+        Object.entries(r.notas).forEach(([k, v]) => { CACHE_NOTAS[k.replace('||','||')] = v; });
+        // Guardar por clave getNotas también
+        ASIGS.forEach(asig => {
+          [1,2].forEach(sem => {
+            const key = `${asig}||${sem}`;
+            if (r.notas[key]) CACHE_NOTAS[`${curso}||${asig}||${sem}`] = r.notas[key];
+          });
+        });
+        CACHE_NOTAS[`${curso}||ALL`] = true;
+      }
+    } catch(e){}
+  }
+}
+
+function getNA(curso, asig, sem, alumno) {
+  const nd = CACHE_NOTAS[`${curso}||${asig}||${sem}`] || {};
+  return nd[alumno] || Array(8).fill(null);
+}
+
+// ============================================================
+//  ADMINISTRACIÓN
+// ============================================================
+async function onAdmCursoChange() {
+  const curso = document.getElementById('adm-curso').value;
+  document.getElementById('adm-ph').style.display    = 'none';
+  document.getElementById('adm-form').style.display  = 'none';
+  document.getElementById('adm-lista').style.display = 'none';
+  if (!curso) { document.getElementById('adm-ph').style.display='block'; return; }
+
+  document.getElementById('adm-form').style.display  = 'block';
+  document.getElementById('adm-lista').style.display = 'block';
+  show('ld-adm'); document.getElementById('adm-tabla').style.display='none';
+
+  delete CACHE_ALUMNOS[curso];
+  try {
+    const r = await api({accion:'getAlumnos',curso});
+    if (r.ok) {
+      CACHE_ALUMNOS[curso] = r.alumnos;
+      renderAdm(curso);
+      document.getElementById('n-num').value = r.alumnos.length + 1;
+    }
+  } catch(e) { setCnx(false); }
+
+  hide('ld-adm'); document.getElementById('adm-tabla').style.display='table';
+  ['n-nombre','n-rut','n-rut-apod','n-nom-apod'].forEach(id => { document.getElementById(id).value=''; });
+  hideAdmMsgs();
+}
+
+function renderAdm(curso) {
+  const alumnos = CACHE_ALUMNOS[curso] || [];
+  let sinApod = 0;
+  let rows = alumnos.map(al => {
+    const rutApodCell = al.rutApoderado
+      ? `<span style="font-size:12px;color:var(--txt2)">${al.rutApoderado}</span>`
+      : `<span style="font-size:11px;color:var(--rojo);font-weight:600">⚠ Sin cargar</span>`;
+    if (!al.rutApoderado) sinApod++;
+    return `<tr>
+      <td class="num">${al.numero}</td>
+      <td>${al.nombre}</td>
+      <td style="font-size:12px;color:var(--txt2)">${al.rut||'—'}</td>
+      <td>${rutApodCell}</td>
+      <td>
+        <button class="btn-ed" onclick="abrirModal('${curso}','${al.nombre.replace(/'/g,"\\'")}')">Editar</button>
+        <button class="btn-el" onclick="eliminarAlumno('${curso}','${al.nombre.replace(/'/g,"\\'")}')">Quitar</button>
+      </td>
+    </tr>`;
+  }).join('');
+  if (!rows) rows = `<tr><td colspan="5" style="text-align:center;color:var(--txt2);padding:1.5rem">Sin alumnos en este curso</td></tr>`;
+  document.getElementById('adm-tbody').innerHTML = rows;
+  const leyenda = sinApod > 0 ? ` · <span style="color:var(--rojo)">${sinApod} sin apoderado</span>` : '';
+  document.getElementById('adm-total').innerHTML = `${alumnos.length} alumno(s)${leyenda}`;
+}
+
+async function agregarAlumno() {
+  const curso    = document.getElementById('adm-curso').value;
+  const nombre   = document.getElementById('n-nombre').value.trim().toUpperCase();
+  const rut      = document.getElementById('n-rut').value.trim();
+  const numero   = parseInt(document.getElementById('n-num').value) || ((CACHE_ALUMNOS[curso]||[]).length+1);
+  const rutApod  = document.getElementById('n-rut-apod').value.trim();
+  const nomApod  = document.getElementById('n-nom-apod').value.trim().toUpperCase();
+
+  if (!curso) { alert('Selecciona un curso'); return; }
+  if (!nombre){ alert('Ingresa el nombre del alumno'); return; }
+
+  show('ld-add'); hideAdmMsgs();
+  try {
+    const r = await api({accion:'agregarAlumno', curso, nombre, rut, numero, rutApoderado:rutApod, nombreApoderado:nomApod});
+    hide('ld-add');
+    if (r.ok) {
+      show('msg-add-ok'); setTimeout(()=>hide('msg-add-ok'),3500);
+      ['n-nombre','n-rut','n-rut-apod','n-nom-apod'].forEach(id=>{ document.getElementById(id).value=''; });
+      delete CACHE_ALUMNOS[curso];
+      const ra = await api({accion:'getAlumnos',curso});
+      if (ra.ok) { CACHE_ALUMNOS[curso]=ra.alumnos; renderAdm(curso); document.getElementById('n-num').value=ra.alumnos.length+1; }
+    } else {
+      show('msg-add-err'); setTimeout(()=>hide('msg-add-err'),3500);
+      console.error(r.error);
+    }
+  } catch(e) {
+    hide('ld-add'); show('msg-add-err'); setTimeout(()=>hide('msg-add-err'),3500); setCnx(false);
+  }
+}
+
+function abrirModal(curso, nombre) {
+  const al = (CACHE_ALUMNOS[curso]||[]).find(a=>a.nombre===nombre);
+  if (!al) return;
+  document.getElementById('e-nombre').value  = al.nombre;
+  document.getElementById('e-rut').value     = al.rut||'';
+  document.getElementById('e-num').value     = al.numero;
+  document.getElementById('e-rut-apod').value= al.rutApoderado||'';
+  document.getElementById('e-nom-apod').value= al.nombreApoderado||'';
+  document.getElementById('e-orig').value    = al.nombre;
+  document.getElementById('modal').style.display='flex';
+  hide('ld-edit');
+}
+function cerrarModal() { document.getElementById('modal').style.display='none'; }
+
+async function guardarEdicion() {
+  const curso        = document.getElementById('adm-curso').value;
+  const nombreOrig   = document.getElementById('e-orig').value;
+  const nombreNuevo  = document.getElementById('e-nombre').value.trim().toUpperCase();
+  const rut          = document.getElementById('e-rut').value.trim();
+  const numero       = parseInt(document.getElementById('e-num').value);
+  const rutApod      = document.getElementById('e-rut-apod').value.trim();
+  const nomApod      = document.getElementById('e-nom-apod').value.trim().toUpperCase();
+
+  if (!nombreNuevo) { alert('El nombre no puede estar vacío'); return; }
+  show('ld-edit');
+  try {
+    const r = await api({accion:'editarAlumno', curso, nombreOriginal:nombreOrig, nombreNuevo, rut, numero, rutApoderado:rutApod, nombreApoderado:nomApod});
+    hide('ld-edit');
+    if (r.ok) {
+      cerrarModal();
+      delete CACHE_ALUMNOS[curso];
+      const ra = await api({accion:'getAlumnos',curso});
+      if (ra.ok) { CACHE_ALUMNOS[curso]=ra.alumnos; renderAdm(curso); }
+    } else { alert('Error: '+(r.error||'desconocido')); }
+  } catch(e) { hide('ld-edit'); alert('Error de conexión'); setCnx(false); }
+}
+
+async function eliminarAlumno(curso, nombre) {
+  if (!confirm(`¿Quitar a "${nombre}" del curso ${curso}?\n\nSus notas no se eliminarán.`)) return;
+  try {
+    const r = await api({accion:'eliminarAlumno', curso, nombre});
+    if (r.ok) {
+      delete CACHE_ALUMNOS[curso];
+      const ra = await api({accion:'getAlumnos',curso});
+      if (ra.ok) { CACHE_ALUMNOS[curso]=ra.alumnos; renderAdm(curso); }
+    } else { alert('Error: '+(r.error||'desconocido')); }
+  } catch(e) { setCnx(false); }
+}
+
+function hideAdmMsgs() { hide('msg-add-ok'); hide('msg-add-err'); }
+
+// ============================================================
+//  HELPERS UI
+// ============================================================
+const show = id => document.getElementById(id).classList.add('show');
+const hide = id => document.getElementById(id).classList.remove('show');
+
+document.getElementById('modal').addEventListener('click', e => { if(e.target===document.getElementById('modal')) cerrarModal(); });
+</script>
+</body>
+</html>

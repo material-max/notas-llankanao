@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal de Apoderados — Escuela Llankanao</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --vd:#1D9E75;--vdd:#0F6E56;--vdl:#E1F5EE;
+  --rj:#E24B4A;--rjl:#FCEBEB;
+  --am:#EF9F27;--aml:#FAEEDA;
+  --az:#2B7BC2;--azl:#E3F0FB;
+  --g:#f5f5f3;--g2:#e8e8e5;--g3:#aaa;
+  --t:#1a1a1a;--t2:#555;--t3:#888;
+  --r:10px;--rl:14px;
+  --s:0 2px 8px rgba(0,0,0,.08);--sl:0 8px 24px rgba(0,0,0,.12);
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f0ed;color:var(--t);font-size:15px;min-height:100vh;line-height:1.45}
+.app{max-width:1000px;margin:0 auto;padding:1rem}
+@media(max-width:580px){.app{padding:.5rem}}
+
+/* Header */
+.hdr{background:#fff;border-radius:var(--rl);padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:14px;box-shadow:var(--s)}
+.logo{width:48px;height:48px;border-radius:50%;background:var(--vd);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff;flex-shrink:0}
+.hdr-txt h1{font-size:16px;font-weight:600}
+.hdr-txt p{font-size:12px;color:var(--t2);margin-top:1px}
+.hdr-usr{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--t2)}
+.hdr-usr strong{color:var(--t)}
+.btn-sal{background:none;border:1px solid var(--g2);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;color:var(--t2);transition:all .15s}
+.btn-sal:hover{background:var(--rjl);border-color:var(--rj);color:var(--rj)}
+
+/* Bienvenida */
+.wlc{background:#fff;border-radius:var(--rl);padding:2rem;box-shadow:var(--s);max-width:500px;margin:2rem auto}
+@media(max-width:500px){.wlc{padding:1.5rem;margin:1rem auto}}
+.wlc-head{text-align:center;margin-bottom:1.5rem}
+.wlc-logo{width:72px;height:72px;margin:0 auto .75rem;border-radius:50%;background:var(--vd);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:32px;color:#fff}
+.wlc-head h2{font-size:20px;font-weight:600;margin-bottom:.25rem}
+.wlc-head p{font-size:13px;color:var(--t2)}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;background:var(--g);border-radius:var(--r);padding:4px;margin-bottom:1.25rem}
+.tab{flex:1;padding:9px;border:none;background:transparent;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;color:var(--t2);transition:all .15s;font-family:inherit}
+.tab.act{background:#fff;color:var(--vdd);box-shadow:var(--s)}
+
+/* Forms */
+.fg{margin-bottom:1rem}
+.fg label{display:block;font-size:13px;font-weight:500;color:var(--t2);margin-bottom:5px}
+.fg input{width:100%;padding:11px 13px;border:1.5px solid var(--g2);border-radius:var(--r);font-size:14px;font-family:inherit;background:#fff;transition:border-color .15s}
+.fg input:focus{outline:none;border-color:var(--vd)}
+.fg .ht{font-size:11px;color:var(--t3);margin-top:3px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+@media(max-width:480px){.frow{grid-template-columns:1fr}}
+.sep{border-top:1px dashed var(--g2);margin:1.25rem 0 1rem;padding-top:1rem}
+.sep-tit{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--vdd);margin-bottom:.75rem}
+
+/* Botones */
+.btn{padding:11px 18px;border:none;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:inherit}
+.btn-p{background:var(--vd);color:#fff;width:100%}
+.btn-p:hover{background:var(--vdd)}
+.btn-p:disabled{opacity:.6;cursor:not-allowed}
+.btn-o{background:#fff;color:var(--t2);border:1.5px solid var(--g2)}
+.btn-o:hover{border-color:var(--vd);color:var(--vdd)}
+.btn-sm{padding:7px 12px;font-size:13px;width:auto}
+
+/* Alertas */
+.alt{padding:10px 14px;border-radius:var(--r);font-size:13px;margin-bottom:1rem;display:flex;align-items:flex-start;gap:8px;line-height:1.4}
+.alt-e{background:var(--rjl);color:#a52524;border-left:3px solid var(--rj)}
+.alt-ok{background:var(--vdl);color:var(--vdd);border-left:3px solid var(--vd)}
+.alt-i{background:var(--azl);color:#1e5a91;border-left:3px solid var(--az)}
+.alt-w{background:var(--aml);color:#8a5a12;border-left:3px solid var(--am)}
+
+/* Dashboard */
+.sec-tit{font-size:13px;font-weight:600;color:var(--t2);margin:1.25rem 0 .75rem;text-transform:uppercase;letter-spacing:.3px}
+.al-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.al-card{background:#fff;border-radius:var(--rl);padding:1.1rem;box-shadow:var(--s);cursor:pointer;transition:all .2s;border:2px solid transparent;position:relative}
+.al-card:hover{transform:translateY(-2px);box-shadow:var(--sl);border-color:var(--vd)}
+.al-card .badge{position:absolute;top:12px;right:12px;background:var(--vd);color:#fff;font-size:11px;font-weight:600;padding:3px 9px;border-radius:12px}
+.al-card .av{width:46px;height:46px;border-radius:50%;background:var(--vdl);color:var(--vdd);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;margin-bottom:.6rem}
+.al-card .nom{font-size:15px;font-weight:600;margin-bottom:4px;padding-right:55px}
+.al-card .meta{font-size:12px;color:var(--t2)}
+.al-card .arr{margin-top:.7rem;font-size:12px;color:var(--vdd);font-weight:500}
+
+/* Vista notas */
+.nh{background:#fff;border-radius:var(--rl);padding:1.25rem;margin-bottom:1rem;box-shadow:var(--s)}
+.nh-top{display:flex;align-items:center;gap:12px;margin-bottom:1rem;flex-wrap:wrap}
+.nh-av{width:52px;height:52px;border-radius:50%;background:var(--vdl);color:var(--vdd);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px}
+.nh-top h2{font-size:17px;margin-bottom:2px}
+.nh-top p{font-size:13px;color:var(--t2)}
+.semsel{display:flex;gap:6px;background:var(--g);border-radius:var(--r);padding:4px}
+.semsel button{flex:1;padding:10px;border:none;background:transparent;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;color:var(--t2);font-family:inherit;transition:all .15s}
+.semsel button.act{background:#fff;color:var(--vdd);box-shadow:var(--s)}
+
+/* Tabla notas */
+.tbl-wrap{background:#fff;border-radius:var(--rl);overflow:hidden;box-shadow:var(--s)}
+.tbl-scroll{overflow-x:auto}
+table.nt{width:100%;border-collapse:collapse;font-size:13px;min-width:700px}
+table.nt th{background:var(--vdl);color:var(--vdd);padding:10px 8px;text-align:center;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.3px;border-bottom:2px solid var(--vd)}
+table.nt th.asig{text-align:left;min-width:145px;position:sticky;left:0;background:var(--vdl);z-index:2}
+table.nt td{padding:9px 8px;text-align:center;border-bottom:1px solid var(--g2)}
+table.nt td.asig{text-align:left;font-weight:500;position:sticky;left:0;background:#fff;z-index:1}
+table.nt tr:hover td{background:var(--g)}
+table.nt tr:hover td.asig{background:var(--g)}
+table.nt td.pr{font-weight:700;background:var(--g);color:var(--vdd)}
+table.nt td.rj{color:var(--rj);font-weight:600}
+table.nt td.pr.rj{background:var(--rjl);color:var(--rj)}
+table.nt .sn{color:var(--t3);font-size:12px}
+table.nt tr.tot td{background:#f0f7f4;font-weight:700;color:var(--vdd);font-size:14px;border-bottom:none}
+table.nt tr.tot td.asig{background:#f0f7f4}
+table.nt.annual{min-width:auto}
+
+.info-b{display:flex;gap:8px;padding:.75rem 1rem;background:var(--azl);border-left:3px solid var(--az);border-radius:var(--r);margin-bottom:1rem;font-size:13px;color:#1e5a91}
+
+/* Loader */
+.ldr{text-align:center;padding:2.5rem;color:var(--t2)}
+.spinner{display:inline-block;width:32px;height:32px;border:3px solid var(--g2);border-top-color:var(--vd);border-radius:50%;animation:sp .7s linear infinite;margin-bottom:.5rem}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Informe imprimible */
+.inf-box{background:#fff;padding:2rem;max-width:850px;margin:1rem auto;box-shadow:var(--s);position:relative;overflow:hidden}
+.inf-hd{display:flex;align-items:center;gap:14px;padding-bottom:1rem;border-bottom:2px solid var(--vd);margin-bottom:1rem;position:relative;z-index:1}
+.inf-hd .esc{width:64px;height:64px;border-radius:50%;background:var(--vd);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;flex-shrink:0}
+.inf-hd h2{font-size:15px;margin-bottom:2px;color:var(--vdd)}
+.inf-hd p{font-size:11px;color:var(--t2);line-height:1.5}
+.inf-tit{text-align:center;font-weight:600;margin:1rem 0;font-size:14px;position:relative;z-index:1}
+.inf-dat{display:grid;grid-template-columns:1fr 1fr;gap:.5rem 1rem;padding:.75rem 1rem;background:var(--vdl);border-radius:var(--r);margin-bottom:1rem;font-size:12px;position:relative;z-index:1}
+.inf-dat strong{font-weight:600;color:var(--vdd)}
+.inf-t{width:100%;border-collapse:collapse;font-size:11px;position:relative;z-index:1}
+.inf-t th{background:var(--vdl);color:var(--vdd);padding:6px 5px;text-align:center;font-weight:600;font-size:10px;border:1px solid var(--g2)}
+.inf-t th.asig{text-align:left}
+.inf-t td{padding:5px;text-align:center;border:1px solid var(--g2)}
+.inf-t td.asig{text-align:left;font-weight:500}
+.inf-t td.pr{font-weight:700;background:#f0f7f4;color:var(--vdd)}
+.inf-t td.rj{color:var(--rj);font-weight:600}
+.inf-t tr.tot td{background:#f0f7f4;font-weight:700;color:var(--vdd)}
+.firmas{display:flex;justify-content:space-around;margin-top:3rem;padding-top:1rem;gap:2rem;position:relative;z-index:1}
+.firma{text-align:center;flex:1}
+.fln{border-top:1px solid var(--t);padding-top:5px;font-size:11px;font-weight:600;color:var(--vdd)}
+.fcargo{font-size:10px;color:var(--t2);margin-top:2px}
+.mw{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:360px;height:360px;opacity:.08;pointer-events:none;z-index:0}
+
+@media print{
+  body{background:#fff}
+  .hdr,.nh,.tbl-wrap,.al-grid,.wlc,.no-print,.info-b{display:none!important}
+  .inf-box{box-shadow:none;margin:0;padding:1cm;max-width:none;width:100%}
+  @page{size:letter;margin:1cm}
+}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- ═══ VISTA: BIENVENIDA (login / registro) ═══ -->
+<div id="v-wlc">
+  <div class="app">
+    <div class="wlc">
+      <div class="wlc-head">
+        <div class="wlc-logo">L</div>
+        <h2>Portal de Apoderados</h2>
+        <p>Escuela Llankanao M.F.M.S. — Consulta de notas en línea</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab act" id="tab-li" onclick="cambiarTab('li')">Ingresar</button>
+        <button class="tab"     id="tab-rg" onclick="cambiarTab('rg')">Registrarme</button>
+      </div>
+
+      <div id="alt-wlc"></div>
+
+      <!-- LOGIN -->
+      <form id="form-li" onsubmit="event.preventDefault();doLogin()">
+        <div class="fg">
+          <label>Correo electrónico</label>
+          <input type="email" id="li-correo" required autocomplete="username">
+        </div>
+        <div class="fg">
+          <label>Contraseña</label>
+          <input type="password" id="li-pwd" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-p" id="btn-li">Ingresar</button>
+      </form>
+
+      <!-- REGISTRO -->
+      <form id="form-rg" class="hidden" onsubmit="event.preventDefault();doRegistro()">
+        <div class="alt alt-i">
+          ℹ️ Ingresa el <strong>RUT con el que estás registrado como apoderado</strong> en la escuela. Si tienes más de un hijo, todos quedarán vinculados automáticamente.
+        </div>
+        <div class="fg">
+          <label>Tu nombre completo</label>
+          <input type="text" id="rg-nombre" required autocomplete="name">
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label>Tu RUT de apoderado</label>
+            <input type="text" id="rg-rut" required placeholder="12345678-9">
+            <div class="ht">Puedes escribirlo con o sin puntos y guion</div>
+          </div>
+          <div class="fg">
+            <label>Correo electrónico</label>
+            <input type="email" id="rg-correo" required autocomplete="email">
+          </div>
+        </div>
+        <div class="frow">
+          <div class="fg">
+            <label>Contraseña</label>
+            <input type="password" id="rg-pwd" required minlength="6" autocomplete="new-password">
+            <div class="ht">Mínimo 6 caracteres</div>
+          </div>
+          <div class="fg">
+            <label>Repetir contraseña</label>
+            <input type="password" id="rg-pwd2" required minlength="6" autocomplete="new-password">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-p" id="btn-rg">Crear cuenta</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VISTA: DASHBOARD ═══ -->
+<div id="v-dash" class="hidden">
+  <div class="app">
+    <div class="hdr">
+      <div class="logo">L</div>
+      <div class="hdr-txt"><h1>Portal de Apoderados</h1><p>Escuela Llankanao M.F.M.S.</p></div>
+      <div class="hdr-usr">
+        Hola, <strong id="d-nombre">—</strong>
+        <button class="btn-sal" onclick="doLogout()">Salir</button>
+      </div>
+    </div>
+    <div id="alt-dash"></div>
+    <div id="bienvenida-msg"></div>
+    <div class="sec-tit">📚 Mis alumnos</div>
+    <div class="al-grid" id="al-grid"></div>
+  </div>
+</div>
+
+<!-- ═══ VISTA: NOTAS ═══ -->
+<div id="v-notas" class="hidden">
+  <div class="app">
+    <div class="hdr">
+      <div class="logo">L</div>
+      <div class="hdr-txt"><h1>Portal de Apoderados</h1><p>Escuela Llankanao M.F.M.S.</p></div>
+      <div class="hdr-usr">
+        <strong id="n-nombre">—</strong>
+        <button class="btn-sal" onclick="doLogout()">Salir</button>
+      </div>
+    </div>
+
+    <div class="nh">
+      <div class="nh-top">
+        <div class="nh-av" id="n-av">?</div>
+        <div>
+          <h2 id="n-al-nom">—</h2>
+          <p id="n-al-cur">—</p>
+        </div>
+        <button class="btn btn-o btn-sm" style="margin-left:auto" onclick="irDash()">← Volver</button>
+      </div>
+      <div class="semsel">
+        <button class="act" data-s="1"      onclick="cambiarSem(1)">1° Semestre</button>
+        <button           data-s="2"        onclick="cambiarSem(2)">2° Semestre</button>
+        <button           data-s="anual"    onclick="cambiarSem('anual')">Anual</button>
+      </div>
+      <div style="margin-top:.85rem">
+        <button class="btn btn-o btn-sm" onclick="verInforme()">📄 Descargar Informe PDF</button>
+      </div>
+    </div>
+
+    <div id="alt-notas"></div>
+    <div id="notas-cont"></div>
+  </div>
+</div>
+
+<!-- ═══ VISTA: INFORME PDF ═══ -->
+<div id="v-inf" class="hidden">
+  <div class="app no-print">
+    <div style="display:flex;gap:8px;margin-bottom:.75rem">
+      <button class="btn btn-o btn-sm" onclick="irNotas()">← Volver</button>
+      <button class="btn btn-p btn-sm" onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
+    </div>
+  </div>
+  <div id="inf-cont"></div>
+</div>
+
+<script>
+// ============================================================
+//  CONFIGURACIÓN
+// ============================================================
+const API_URL = "https://script.google.com/macros/s/AKfycbxEd-cgxWW9onn29Wt8HPoKqa74ExYF8NSn2N0US9Bm_Ozo5LLDwAwNItcSFZ2uoPYC/exec";
+
+// ============================================================
+//  ESTADO
+// ============================================================
+let S = {
+  token: null, nombre: '', correo: '',
+  alumnos: [],
+  alumnoActual: null,
+  semestre: 1,
+  notas: {}   // rutAlumno -> { s1, s2 }
+};
+
+const ASIGS = [
+  'Lenguaje y Comunicación',
+  'Matemática',
+  'Historia, Geografía y Ciencias Sociales',
+  'Ciencias Naturales',
+  'Idioma Extranjero: Inglés',
+  'Tecnología',
+  'Artes Visuales',
+  'Educación Física y Salud',
+  'Música',
+  'Religión'
+];
+
+// ============================================================
+//  API
+// ============================================================
+async function api(data) {
+  if (!API_URL || API_URL.includes('PEGA_AQUI'))
+    throw new Error('El portal no está configurado. Contacta con UTP.');
+  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  const res = await fetch(API_URL + '?payload=' + encodeURIComponent(b64), { redirect:'follow' });
+  if (!res.ok) throw new Error('Error de conexión (' + res.status + ')');
+  const txt = await res.text();
+  let json;
+  try { json = JSON.parse(txt); } catch(e) { throw new Error('Respuesta inválida del servidor'); }
+  if (!json.ok) throw new Error(json.error || 'Error desconocido');
+  return json;
+}
+
+// ============================================================
+//  UI HELPERS
+// ============================================================
+function vista(id) {
+  ['wlc','dash','notas','inf'].forEach(v => {
+    document.getElementById('v-'+v).classList.toggle('hidden', v!==id);
+  });
+  window.scrollTo(0,0);
+}
+
+function altShow(id, tipo, msg) {
+  const ico = {ok:'✅',e:'⚠️',i:'ℹ️',w:'⚠️'}[tipo]||'';
+  document.getElementById(id).innerHTML =
+    `<div class="alt alt-${tipo==='ok'?'ok':tipo==='e'?'e':tipo==='i'?'i':'w'}">${ico} ${msg}</div>`;
+  if (tipo==='ok') setTimeout(()=>altClear(id), 4000);
+}
+function altClear(id) { const d=document.getElementById(id); if(d) d.innerHTML=''; }
+
+function setCargando(btnId, on) {
+  const b = document.getElementById(btnId);
+  if (!b) return;
+  if (on) { b._orig=b.innerHTML; b.innerHTML='<span style="border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;width:14px;height:14px;display:inline-block;animation:sp .7s linear infinite;vertical-align:middle"></span> Procesando...'; b.disabled=true; }
+  else   { b.innerHTML=b._orig||''; b.disabled=false; }
+}
+
+function iniciales(nombre) {
+  return (nombre||'').split(' ').map(s=>s[0]||'').join('').slice(0,2).toUpperCase();
+}
+
+// ============================================================
+//  TABS / NAV
+// ============================================================
+function cambiarTab(t) {
+  ['li','rg'].forEach(id => {
+    document.getElementById('tab-'+id).classList.toggle('act', id===t);
+    document.getElementById('form-'+id).classList.toggle('hidden', id!==t);
+  });
+  altClear('alt-wlc');
+}
+
+// ============================================================
+//  LOGIN
+// ============================================================
+async function doLogin() {
+  const correo = document.getElementById('li-correo').value.trim();
+  const password = document.getElementById('li-pwd').value;
+  if (!correo||!password) { altShow('alt-wlc','e','Ingresa correo y contraseña'); return; }
+  setCargando('btn-li', true);
+  try {
+    const r = await api({ accion:'loginApoderado', correo, password });
+    S.token=r.token; S.nombre=r.nombre; S.correo=r.correo;
+    guardarSesion();
+    await cargarDash();
+  } catch(e) {
+    altShow('alt-wlc','e', e.message);
+  } finally { setCargando('btn-li', false); }
+}
+
+// ============================================================
+//  REGISTRO
+// ============================================================
+async function doRegistro() {
+  const nombre   = document.getElementById('rg-nombre').value.trim();
+  const rut      = document.getElementById('rg-rut').value.trim();
+  const correo   = document.getElementById('rg-correo').value.trim();
+  const pwd      = document.getElementById('rg-pwd').value;
+  const pwd2     = document.getElementById('rg-pwd2').value;
+
+  if (!nombre||!rut||!correo||!pwd) { altShow('alt-wlc','e','Completa todos los campos'); return; }
+  if (pwd!==pwd2)   { altShow('alt-wlc','e','Las contraseñas no coinciden'); return; }
+  if (pwd.length<6) { altShow('alt-wlc','e','La contraseña debe tener al menos 6 caracteres'); return; }
+
+  setCargando('btn-rg', true);
+  try {
+    const r = await api({ accion:'registrarApoderado', nombre, rut, correo, password:pwd });
+    S.token=r.token; S.nombre=r.nombre; S.correo=r.correo; S.alumnos=r.alumnos||[];
+    guardarSesion();
+    // Mensaje de bienvenida con los alumnos vinculados
+    const cant = S.alumnos.length;
+    const noms = S.alumnos.map(a=>a.nombre).join(', ');
+    vista('dash');
+    document.getElementById('d-nombre').textContent = S.nombre;
+    renderAlumnos();
+    document.getElementById('bienvenida-msg').innerHTML =
+      `<div class="alt alt-ok">✅ ¡Bienvenido/a! Se vincularon <strong>${cant} alumno(s)</strong>: ${noms}</div>`;
+    setTimeout(()=>{ document.getElementById('bienvenida-msg').innerHTML=''; }, 8000);
+  } catch(e) {
+    altShow('alt-wlc','e', e.message);
+  } finally { setCargando('btn-rg', false); }
+}
+
+// ============================================================
+//  DASHBOARD
+// ============================================================
+async function cargarDash() {
+  vista('dash');
+  document.getElementById('d-nombre').textContent = S.nombre;
+  document.getElementById('al-grid').innerHTML =
+    '<div class="ldr"><div class="spinner"></div><p>Cargando alumnos...</p></div>';
+  try {
+    const r = await api({ accion:'getPerfilApoderado', token:S.token });
+    S.nombre  = r.nombre;
+    S.alumnos = r.alumnos||[];
+    document.getElementById('d-nombre').textContent = S.nombre;
+    renderAlumnos();
+  } catch(e) {
+    if (e.message.includes('expirada')) { doLogout(); return; }
+    altShow('alt-dash','e', e.message);
+    document.getElementById('al-grid').innerHTML='';
+  }
+}
+
+function renderAlumnos() {
+  const grid = document.getElementById('al-grid');
+  if (!S.alumnos.length) {
+    grid.innerHTML = '<div class="alt alt-w" style="grid-column:1/-1">No se encontraron alumnos vinculados. Contacta con UTP del colegio.</div>';
+    return;
+  }
+  grid.innerHTML = S.alumnos.map(al => `
+    <div class="al-card" onclick="verNotas('${al.rut}')">
+      <div class="badge">${al.curso}</div>
+      <div class="av">${iniciales(al.nombre)}</div>
+      <div class="nom">${al.nombre}</div>
+      <div class="meta">N° ${al.numero||'—'} de lista</div>
+      <div class="arr">Ver notas →</div>
+    </div>`).join('');
+}
+
+// ============================================================
+//  VER NOTAS
+// ============================================================
+async function verNotas(rutAlumno) {
+  const al = S.alumnos.find(a=>a.rut===rutAlumno);
+  if (!al) return;
+  S.alumnoActual = al;
+  S.semestre = 1;
+  vista('notas');
+  document.getElementById('n-nombre').textContent  = S.nombre;
+  document.getElementById('n-av').textContent       = iniciales(al.nombre);
+  document.getElementById('n-al-nom').textContent   = al.nombre;
+  document.getElementById('n-al-cur').textContent   = al.curso + ' · N° ' + (al.numero||'—');
+  document.querySelectorAll('.semsel button').forEach(b => b.classList.toggle('act', b.dataset.s==='1'));
+  document.getElementById('notas-cont').innerHTML =
+    '<div class="ldr"><div class="spinner"></div><p>Cargando notas...</p></div>';
+  altClear('alt-notas');
+  try {
+    await asegurarNotas(rutAlumno);
+    renderNotas(1);
+  } catch(e) {
+    altShow('alt-notas','e', e.message);
+    document.getElementById('notas-cont').innerHTML='';
+  }
+}
+
+async function asegurarNotas(rutAlumno) {
+  if (!S.notas[rutAlumno]) {
+    const r = await api({ accion:'getNotasPortal', token:S.token, rutAlumno });
+    S.notas[rutAlumno] = { s1:r.s1, s2:r.s2 };
+  }
+}
+
+async function cambiarSem(s) {
+  if (!S.alumnoActual) return;
+  S.semestre = s;
+  document.querySelectorAll('.semsel button').forEach(b => b.classList.toggle('act', b.dataset.s===String(s)));
+  document.getElementById('notas-cont').innerHTML =
+    '<div class="ldr"><div class="spinner"></div><p>Cargando notas...</p></div>';
+  altClear('alt-notas');
+  try {
+    await asegurarNotas(S.alumnoActual.rut);
+    renderNotas(s);
+  } catch(e) {
+    altShow('alt-notas','e', e.message);
+    document.getElementById('notas-cont').innerHTML='';
+  }
+}
+
+// ============================================================
+//  RENDER TABLAS DE NOTAS
+// ============================================================
+const prom = ns => { const v=ns.filter(n=>n!==null); return v.length?v.reduce((a,b)=>a+b,0)/v.length:null; };
+const rd   = n => Math.round(n*10)/10;
+const fmt  = n => n===null?'—':n.toFixed(1);
+const rcls = n => n!==null&&n<4?'rj':'';
+
+function renderNotas(sem) {
+  const nd = S.notas[S.alumnoActual.rut];
+  if (sem==='anual') return renderAnual(nd.s1||{}, nd.s2||{});
+
+  const datos = sem===1 ? (nd.s1||{}) : (nd.s2||{});
+  if (!Object.keys(datos).length) {
+    document.getElementById('notas-cont').innerHTML =
+      `<div class="alt alt-i">ℹ️ Todavía no hay notas registradas para el ${sem}° semestre. Vuelve más tarde.</div>`;
+    return;
+  }
+
+  const asigs = ASIGS.filter(a=>datos[a]);
+  let rows='', pg=[];
+  asigs.forEach(asig => {
+    const ns = datos[asig];
+    const p  = prom(ns);
+    if (p!==null) pg.push(rd(p));
+    const celdas = ns.map(n=>n===null?`<td class="sn">—</td>`:`<td class="${rcls(n)}">${fmt(n)}</td>`).join('');
+    rows+=`<tr><td class="asig">${asig}</td>${celdas}<td class="pr ${p!==null&&rd(p)<4?'rj':''}">${p!==null?fmt(rd(p)):'—'}</td></tr>`;
+  });
+  const pgFin = pg.length?rd(pg.reduce((a,b)=>a+b,0)/pg.length):null;
+  rows+=`<tr class="tot"><td class="asig">PROMEDIO GENERAL ${sem}° SEMESTRE</td><td colspan="8" style="text-align:right;padding-right:12px">→</td><td class="pr ${pgFin!==null&&pgFin<4?'rj':''}">${fmt(pgFin)}</td></tr>`;
+
+  let th=''; for(let i=1;i<=8;i++) th+=`<th>N${i}</th>`;
+  document.getElementById('notas-cont').innerHTML = `
+    <div class="info-b">📊 Las notas bajo 4.0 se destacan en <strong style="color:var(--rj)">rojo</strong>. "—" = nota aún no registrada.</div>
+    <div class="tbl-wrap"><div class="tbl-scroll"><table class="nt">
+      <thead><tr><th class="asig">Asignatura</th>${th}<th>Promedio</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div></div>`;
+}
+
+function renderAnual(s1, s2) {
+  const asigs = ASIGS.filter(a=>s1[a]||s2[a]);
+  if (!asigs.length) {
+    document.getElementById('notas-cont').innerHTML =
+      '<div class="alt alt-i">ℹ️ Todavía no hay notas anuales registradas.</div>';
+    return;
+  }
+  let rows='', pg=[];
+  asigs.forEach(asig => {
+    const p1 = s1[asig]?prom(s1[asig]):null;
+    const p2 = s2[asig]?prom(s2[asig]):null;
+    let pf = p1!==null&&p2!==null?(p1+p2)/2:p1!==null?p1:p2;
+    if(pf!==null) pg.push(rd(pf));
+    rows+=`<tr>
+      <td class="asig">${asig}</td>
+      <td class="${p1!==null&&rd(p1)<4?'rj':''}">${p1!==null?fmt(rd(p1)):'—'}</td>
+      <td class="${p2!==null&&rd(p2)<4?'rj':''}">${p2!==null?fmt(rd(p2)):'—'}</td>
+      <td class="pr ${pf!==null&&rd(pf)<4?'rj':''}">${pf!==null?fmt(rd(pf)):'—'}</td>
+    </tr>`;
+  });
+  const pgFin = pg.length?rd(pg.reduce((a,b)=>a+b,0)/pg.length):null;
+  rows+=`<tr class="tot"><td class="asig">PROMEDIO GENERAL ANUAL</td><td colspan="2" style="text-align:right;padding-right:12px">→</td><td class="pr ${pgFin!==null&&pgFin<4?'rj':''}">${fmt(pgFin)}</td></tr>`;
+  document.getElementById('notas-cont').innerHTML = `
+    <div class="info-b">📊 Promedios por semestre y promedio final anual. Bajo 4.0 en <strong style="color:var(--rj)">rojo</strong>.</div>
+    <div class="tbl-wrap"><div class="tbl-scroll"><table class="nt annual">
+      <thead><tr><th class="asig">Asignatura</th><th>1° Sem.</th><th>2° Sem.</th><th>Prom. Final</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div></div>`;
+}
+
+// ============================================================
+//  INFORME PDF
+// ============================================================
+function verInforme() {
+  const nd  = S.notas[S.alumnoActual.rut];
+  if (!nd) { altShow('alt-notas','e','Carga las notas primero'); return; }
+  const al  = S.alumnoActual;
+  const sem = S.semestre;
+  const hoy = new Date().toLocaleDateString('es-CL',{day:'2-digit',month:'long',year:'numeric'});
+  const titulo = sem==='anual'?'Informe Anual de Calificaciones':`Informe de Calificaciones — ${sem}° Semestre`;
+  const tabla  = sem==='anual' ? tablaInfAnual(nd.s1||{},nd.s2||{}) : tablaInfSem(sem===1?nd.s1||{}:nd.s2||{},sem);
+
+  document.getElementById('inf-cont').innerHTML = `
+    <div class="inf-box">
+      <svg class="mw" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="100" r="90" fill="none" stroke="#1D9E75" stroke-width="4"/>
+        <text x="100" y="120" text-anchor="middle" font-size="90" font-weight="bold" fill="#1D9E75">L</text>
+      </svg>
+      <div class="inf-hd">
+        <div class="esc">L</div>
+        <div>
+          <h2>Escuela Llankanao M.F.M.S.</h2>
+          <p>Linares · Chile · RBD 3285-9<br>Sistema de Notas — Año 2026</p>
+        </div>
+      </div>
+      <div class="inf-tit">${titulo}</div>
+      <div class="inf-dat">
+        <div><strong>Alumno/a:</strong> ${al.nombre}</div>
+        <div><strong>Curso:</strong> ${al.curso}</div>
+        <div><strong>N° de lista:</strong> ${al.numero||'—'}</div>
+        <div><strong>Fecha de emisión:</strong> ${hoy}</div>
+      </div>
+      ${tabla}
+      <div class="firmas">
+        <div class="firma"><div class="fln">Sra. Gloria Barrera V.</div><div class="fcargo">Jefa UTP</div></div>
+        <div class="firma"><div class="fln">Sr. Paulo Quezada V.</div><div class="fcargo">Director</div></div>
+      </div>
+    </div>`;
+  vista('inf');
+}
+
+function tablaInfSem(datos, sem) {
+  const asigs = ASIGS.filter(a=>datos[a]);
+  if (!asigs.length) return '<p style="text-align:center;color:#888;padding:2rem">Sin notas para este semestre.</p>';
+  let th=''; for(let i=1;i<=8;i++) th+=`<th>N${i}</th>`;
+  let rows='', pg=[];
+  asigs.forEach(asig => {
+    const ns=datos[asig];
+    const p=prom(ns);
+    if(p!==null) pg.push(rd(p));
+    rows+=`<tr><td class="asig">${asig}</td>${ns.map(n=>n===null?`<td>—</td>`:`<td class="${rcls(n)}">${fmt(n)}</td>`).join('')}<td class="pr ${p!==null&&rd(p)<4?'rj':''}">${p!==null?fmt(rd(p)):'—'}</td></tr>`;
+  });
+  const pgFin=pg.length?rd(pg.reduce((a,b)=>a+b,0)/pg.length):null;
+  rows+=`<tr class="tot"><td class="asig">PROMEDIO GENERAL</td><td colspan="8" style="text-align:right">→</td><td class="pr">${fmt(pgFin)}</td></tr>`;
+  return `<table class="inf-t"><thead><tr><th class="asig">Asignatura</th>${th}<th>Prom.</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function tablaInfAnual(s1, s2) {
+  const asigs=ASIGS.filter(a=>s1[a]||s2[a]);
+  if (!asigs.length) return '<p style="text-align:center;color:#888;padding:2rem">Sin notas anuales.</p>';
+  let rows='', pg=[];
+  asigs.forEach(asig => {
+    const p1=s1[asig]?prom(s1[asig]):null;
+    const p2=s2[asig]?prom(s2[asig]):null;
+    let pf=p1!==null&&p2!==null?(p1+p2)/2:p1!==null?p1:p2;
+    if(pf!==null) pg.push(rd(pf));
+    rows+=`<tr>
+      <td class="asig">${asig}</td>
+      <td class="${p1!==null&&rd(p1)<4?'rj':''}">${p1!==null?fmt(rd(p1)):'—'}</td>
+      <td class="${p2!==null&&rd(p2)<4?'rj':''}">${p2!==null?fmt(rd(p2)):'—'}</td>
+      <td class="pr ${pf!==null&&rd(pf)<4?'rj':''}">${pf!==null?fmt(rd(pf)):'—'}</td>
+    </tr>`;
+  });
+  const pgFin=pg.length?rd(pg.reduce((a,b)=>a+b,0)/pg.length):null;
+  rows+=`<tr class="tot"><td class="asig">PROMEDIO GENERAL ANUAL</td><td colspan="2" style="text-align:right">→</td><td class="pr">${fmt(pgFin)}</td></tr>`;
+  return `<table class="inf-t"><thead><tr><th class="asig">Asignatura</th><th>1° Sem.</th><th>2° Sem.</th><th>Prom. Final</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ============================================================
+//  NAVEGACIÓN INTERNA
+// ============================================================
+function irDash()  { vista('dash'); altClear('alt-notas'); }
+function irNotas() { vista('notas'); }
+
+// ============================================================
+//  SESIÓN (localStorage)
+// ============================================================
+function guardarSesion() {
+  try { localStorage.setItem('apod_ses', JSON.stringify({token:S.token,nombre:S.nombre,correo:S.correo})); } catch(e){}
+}
+function cargarSesion() {
+  try {
+    const d = JSON.parse(localStorage.getItem('apod_ses')||'{}');
+    if (d.token) { S.token=d.token; S.nombre=d.nombre; S.correo=d.correo; return true; }
+  } catch(e){}
+  return false;
+}
+function doLogout() {
+  S = { token:null,nombre:'',correo:'',alumnos:[],alumnoActual:null,semestre:1,notas:{} };
+  try { localStorage.removeItem('apod_ses'); } catch(e){}
+  ['li-correo','li-pwd'].forEach(id => { document.getElementById(id).value=''; });
+  cambiarTab('li');
+  vista('wlc');
+}
+
+// ============================================================
+//  INICIO
+// ============================================================
+(async () => {
+  if (cargarSesion()) {
+    try { await cargarDash(); return; } catch(e) { doLogout(); }
+  }
+  vista('wlc');
+})();
+</script>
+</body>
+</html>
